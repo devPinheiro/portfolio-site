@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Outfit', system-ui, sans-serif;
+
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  
+  /* Dark theme colors (default) */
+  --color-background: 0 0% 0%;
+  --color-foreground: 0 0% 95%;
+  --color-primary: 0 0% 95%;
+  --color-primary-foreground: 0 0% 5%;
+  --color-secondary: 0 0% 12%;
+  --color-secondary-foreground: 0 0% 95%;
+  --color-muted: 0 0% 12%;
+  --color-muted-foreground: 0 0% 60%;
+  --color-accent: 0 0% 15%;
+  --color-accent-foreground: 0 0% 95%;
+  --color-border: 0 0% 15%;
+  --color-input: 0 0% 15%;
+  --color-ring: 0 0% 80%;
+}
+
+/* Override theme colors for light mode */
+html:not(.dark) {
+  --color-background: 0 0% 100%;
+  --color-foreground: 0 0% 5%;
+  --color-primary: 0 0% 5%;
+  --color-primary-foreground: 0 0% 95%;
+  --color-secondary: 0 0% 96%;
+  --color-secondary-foreground: 0 0% 5%;
+  --color-muted: 0 0% 96%;
+  --color-muted-foreground: 0 0% 40%;
+  --color-accent: 0 0% 93%;
+  --color-accent-foreground: 0 0% 5%;
+  --color-border: 0 0% 90%;
+  --color-input: 0 0% 90%;
+  --color-ring: 0 0% 20%;
+}
+
+@layer base {
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased selection:bg-white/20;
+    cursor: none; /* Hide default cursor for custom one */
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+
+
