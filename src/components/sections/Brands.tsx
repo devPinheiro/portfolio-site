@@ -106,7 +106,7 @@ export default function Brands() {
   );
 
   return (
-    <section ref={containerRef} className="py-24 bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors duration-300">
+    <section ref={containerRef} className="py-24 mt-12 bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-8">
         
         {/* Section Header */}
