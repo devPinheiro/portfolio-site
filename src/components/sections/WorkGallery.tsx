@@ -24,7 +24,7 @@ const projects = [
     id: 3,
     title: "Maraboo",
     category: "SaaS Cross Border Fintech Dashboard",
-    image: "https://res.cloudinary.com/appnet/image/upload/v1768523027/nickel/maraboo.png",
+    image: "https://res.cloudinary.com/appnet/image/upload/v1768599504/nickel/maraboo-2.png",
     url: "https://mara.boo/"
   },
   {
@@ -48,15 +48,16 @@ export default function WorkGallery() {
           translateX: 0,
         },
         {
-          translateX: "-300vw",
+          translateX: "-305vw",
           ease: "none",
           duration: 1,
           scrollTrigger: {
             trigger: triggerRef.current,
             start: "top top",
-            end: "2000 top",
-            scrub: 0.6,
+            end: "+=110vh",
+            scrub: 1.6,
             pin: true,
+            anticipatePin: 1,
           },
         }
       );
@@ -77,7 +78,7 @@ export default function WorkGallery() {
                 <img 
                   src={project.image} 
                   alt={project.title} 
-                  className="w-[60vw] h-[60vh]  grayscale group-hover:grayscale-0 transition-all duration-700 ease-out transform group-hover:scale-105"
+                  className="w-full h-[60vh]  grayscale group-hover:grayscale-0 transition-all duration-700 ease-out transform group-hover:scale-105"
                 />
               </div>
               <div className="flex justify-between items-end">

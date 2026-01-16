@@ -12,7 +12,7 @@ export const Layout: React.FC = () => {
   const [isContactOverlayOpen, setIsContactOverlayOpen] = useState(false);
 
   const handleContactOpen = () => {
-    setIsContactOverlayOpen(true);
+    // setIsContactOverlayOpen(true);
   };
 
   const handleContactClose = () => {

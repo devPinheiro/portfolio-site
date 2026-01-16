@@ -160,7 +160,7 @@ export default function ContactMinimal({ onContactClick }: ContactMinimalProps) 
             />
             
             {/* Content */}
-            <div className="relative z-10 flex items-center gap-4 px-8 py-4 text-black">
+            <a href='https://calendar.app.google/9V1YYtytdZY9ZYUs8' target='_blank' className="relative z-10 flex items-center gap-4 px-8 py-4 text-black">
               <span ref={textRef} className="font-medium tracking-wide text-sm uppercase">
                 Get in touch
               </span>
@@ -186,7 +186,7 @@ export default function ContactMinimal({ onContactClick }: ContactMinimalProps) 
                   />
                 </svg>
               </div>
-            </div>
+            </a>
           </button>
         </div>
 
