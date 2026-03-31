@@ -9,7 +9,7 @@ interface MenuOverlayProps {
 const menuItems = [
   { label: 'Home', href: '#home' },
   { label: 'Work', href: '#work' },
-  { label: 'About', href: '#about' },
+  { label: 'Brands', href: '#brands' },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -27,22 +27,33 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
   const tl = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
     const ctx = gsap.context(() => {
       tl.current = gsap.timeline({ paused: true });
 
       tl.current
         .set(overlay.current, { display: 'block' })
-        .fromTo(overlay.current, 
-          { 
-            clipPath: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)'
+        .fromTo(
+          overlay.current,
+          {
+            clipPath: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)',
           },
-          { 
+          {
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
             duration: 0.8,
-            ease: "power4.inOut"
+            ease: 'power4.inOut',
           }
         )
-        .fromTo(menuItemsRef.current,
+        .fromTo(
+          menuItemsRef.current,
           {
             y: 100,
             opacity: 0,
@@ -52,11 +63,12 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
             opacity: 1,
             duration: 0.6,
             stagger: 0.1,
-            ease: "power3.out"
+            ease: 'power3.out',
           },
-          "-=0.4"
+          '-=0.4'
         )
-        .fromTo(socialItemsRef.current,
+        .fromTo(
+          socialItemsRef.current,
           {
             y: 50,
             opacity: 0,
@@ -66,9 +78,9 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
             opacity: 1,
             duration: 0.4,
             stagger: 0.05,
-            ease: "power2.out"
+            ease: 'power2.out',
           },
-          "-=0.3"
+          '-=0.3'
         );
     }, overlay);
 
@@ -102,26 +114,34 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
   };
 
   return (
-    <div 
+    <div
       ref={overlay}
+      id="primary-navigation"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Site navigation"
+      aria-hidden={!isOpen}
       className="fixed inset-0 z-40 bg-black text-white hidden"
       style={{ clipPath: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)' }}
     >
-      <div 
+      <div
         ref={menuContainer}
         className="h-full w-full flex flex-col justify-center items-center relative px-8"
       >
-        <nav className="text-center">
+        <nav className="text-center" aria-label="Page sections">
           <ul className="space-y-8">
             {menuItems.map((item, index) => (
-              <li 
+              <li
                 key={item.label}
-                ref={el => { menuItemsRef.current[index] = el; }}
+                ref={(el) => {
+                  menuItemsRef.current[index] = el;
+                }}
                 className="overflow-hidden"
               >
                 <button
+                  type="button"
                   onClick={() => handleItemClick(item.href)}
-                  className="text-6xl md:text-8xl font-light tracking-tight uppercase hover:italic transition-all duration-300 cursor-pointer group"
+                  className="text-6xl md:text-8xl font-light tracking-tight uppercase hover:italic transition-all duration-300 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-black rounded-sm"
                 >
                   <span className="block group-hover:skew-x-12 transition-transform duration-500">
                     {item.label}
@@ -132,23 +152,24 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
           </ul>
         </nav>
 
-        <div className="absolute bottom-16 left-8 flex space-x-8">
+        <ul className="absolute bottom-16 left-8 flex list-none flex-wrap gap-8">
           {socialLinks.map((link, index) => (
-            <a
-              key={link.label}
-              ref={el => { socialItemsRef.current[index] = el; }}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => onClose()}
-              className="text-sm tracking-wider uppercase hover:text-gray-300 transition-colors duration-300"
-            >
-              {link.label}
-            </a>
+            <li key={link.label}>
+              <a
+                ref={(el) => {
+                  socialItemsRef.current[index] = el;
+                }}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => onClose()}
+                className="text-sm tracking-wider uppercase hover:text-gray-300 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-black rounded-sm"
+              >
+                {link.label}
+              </a>
+            </li>
           ))}
-        </div>
-
-       
+        </ul>
       </div>
     </div>
   );
