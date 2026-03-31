@@ -21,8 +21,15 @@ export const Layout: React.FC = () => {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <Header />
-      <main className="bg-white dark:bg-black text-black dark:text-white min-h-screen w-full relative transition-colors duration-300">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="bg-white dark:bg-black text-black dark:text-white min-h-screen w-full relative transition-colors duration-300 outline-none"
+      >
         <Hero />
         <WorkGallery />
         {/* <About /> */}

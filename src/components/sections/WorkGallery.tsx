@@ -41,52 +41,64 @@ export default function WorkGallery() {
   const triggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const n = projects.length;
+    const lastIndex = Math.max(1, n - 1);
+    const endX = `-${lastIndex * 100}vw`;
+
     const ctx = gsap.context(() => {
       gsap.fromTo(
         sectionRef.current,
+        { translateX: 0 },
         {
-          translateX: 0,
-        },
-        {
-          translateX: "-305vw",
+          translateX: endX,
           ease: "none",
           duration: 1,
           scrollTrigger: {
             trigger: triggerRef.current,
             start: "top top",
-            end: "+=110vh",
-            scrub: 1.6,
+            end: `+=${100 * n}vh`,
+            scrub: 1,
             pin: true,
-            anticipatePin: 1,
+            pinSpacing: true,
+            anticipatePin: 0,
+            invalidateOnRefresh: true,
+            // No snap here — snap fights pin/Lenis and can release the spacer early mid-scrub
           },
         }
       );
     }, triggerRef);
+
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
 
     return () => ctx.revert();
   }, []);
 
   return (
     <>
-    <section id="work" className="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300 hidden lg:flex">
-      <div ref={triggerRef} className="overflow-hidden">
+    <section
+      ref={triggerRef}
+      id="work"
+      className="hidden lg:block min-h-screen w-full overflow-hidden bg-white dark:bg-black text-black dark:text-white transition-colors duration-300"
+    >
       <div ref={sectionRef} className="h-screen w-[400vw] flex flex-row relative">
         {projects.map((project, index) => (
           <div key={project.id} className="w-screen h-full flex flex-col justify-center items-center px-12 relative border-r border-white/10">
-            <div className="relative group cursor-pointer">
-              <div className="overflow-hidden mb-8">
+            <div className="relative group cursor-pointer w-full max-w-6xl mx-auto">
+              <div className="mb-8 flex w-full justify-center">
                 <img 
                   src={project.image} 
                   alt={project.title} 
-                  className="w-full h-[60vh]  grayscale group-hover:grayscale-0 transition-all duration-700 ease-out transform group-hover:scale-105"
+                  className="max-h-[min(60vh,52rem)] w-auto max-w-full object-contain object-center grayscale group-hover:grayscale-0 transition-all duration-700 ease-out transform group-hover:scale-105"
                 />
               </div>
-              <div className="flex justify-between items-end">
-                <div>
+              <div className="flex justify-between items-end gap-6">
+                <div className="min-w-0">
                   <p className="text-sm uppercase tracking-widest mb-2 text-gray-400">{project.category}</p>
-                  <h3 className="text-6xl font-bold uppercase">{project.title}</h3>
+                  <h3 className="text-4xl xl:text-6xl font-bold uppercase">{project.title}</h3>
                 </div>
-                <a href={project.url} target='_blank' className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-colors duration-300" >
+                <a href={project.url} target="_blank" rel="noreferrer" className="shrink-0 w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-colors duration-300" >
                   <ArrowUpRight size={32} />
                 </a>
               </div>
@@ -97,17 +109,16 @@ export default function WorkGallery() {
           </div>
         ))}
       </div>
-      </div>
     </section>
-   <section id="work" className="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300 flex flex-col gap-24 lg:hidden">
+   <section id="work-mobile" className="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300 flex flex-col gap-24 lg:hidden">
       {projects.map((project, index) => (
-          <div key={project.id} className="w-screen h-full flex flex-col justify-center items-center px-16 relative border-r border-white/10">
-            <div className="relative group cursor-pointer">
-              <div className="overflow-hidden mb-8">
+          <div key={project.id} className="w-full min-w-0 flex flex-col justify-center items-center px-4 sm:px-8 md:px-12 relative border-r border-white/10">
+            <div className="relative group cursor-pointer w-full max-w-6xl">
+              <div className="mb-8 flex w-full justify-center">
                 <img 
                   src={project.image} 
                   alt={project.title} 
-                  className="w-full h-[30vh]   transition-all duration-700 ease-out transform group-hover:scale-105"
+                  className="max-h-[min(40vh,28rem)] w-auto max-w-full object-contain object-center transition-all duration-700 ease-out transform group-hover:scale-105"
                 />
               </div>
               <div className="flex justify-between items-end">

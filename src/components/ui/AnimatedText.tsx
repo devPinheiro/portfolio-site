@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { cn } from '../../lib/cn';
 
 interface AnimatedTextProps {
   text: string;
@@ -9,7 +10,7 @@ interface AnimatedTextProps {
 }
 
 export default function AnimatedText({ text, className = '', delay = 0 }: AnimatedTextProps) {
-  const words = text.split(' ');
+  const words = text.split(/\s+/).filter(Boolean);
 
   const container = {
     hidden: { opacity: 0 },
@@ -56,7 +57,10 @@ export default function AnimatedText({ text, className = '', delay = 0 }: Animat
 
   return (
     <motion.div
-      className={className}
+      className={cn(
+        'flex w-full max-w-full flex-wrap justify-center gap-x-2 gap-y-1',
+        className
+      )}
       variants={container}
       initial="hidden"
       animate="visible"
@@ -64,7 +68,7 @@ export default function AnimatedText({ text, className = '', delay = 0 }: Animat
       {words.map((word, index) => (
         <motion.span
           key={index}
-          className="inline-block mr-2"
+          className="inline-block text-center"
           variants={index % 2 === 0 ? child : childAlternate}
         >
           {word}

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
+
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import gsap from 'gsap';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,23 +42,25 @@ export default function Brands() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse"
-        }
+          // Fire as soon as the section edge enters the viewport (not deep into the frame)
+          start: "top bottom",
+          invalidateOnRefresh: true,
+          toggleActions: "play none none reverse",
+        },
       });
 
       tl.to(titleRef.current, {
         y: 0,
         opacity: 1,
-        duration: 1,
+        duration: 0.65,
         ease: "power3.out"
       })
       .to(subtitleRef.current, {
         y: 0,
         opacity: 1,
-        duration: 0.8,
+        duration: 0.55,
         ease: "power2.out"
-      }, "-=0.4");
+      }, "-=0.35");
 
       // Infinite marquee animations
       // Row 1: Left to right
@@ -92,21 +95,32 @@ export default function Brands() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   const BrandCard = ({ brand, index }: { brand: { name: string; logo: string }; index: number }) => (
     <div 
       key={`${brand.name}-${index}`}
-      className="group flex items-center justify-center min-w-[200px] h-24 mx-8 px-6 py-4 bg-white backdrop-blur-sm rounded-xl border border-gray-800 hover:border-gray-600 transition-all duration-300"
+      className="group flex items-center justify-center min-w-[120px] sm:min-w-[132px] h-12 sm:h-14 mx-3 sm:mx-4 px-2.5 sm:px-3 py-1.5 bg-white backdrop-blur-sm rounded-lg border border-gray-800 hover:border-gray-600 transition-all duration-300"
     >
       <img
         src={brand.logo}
         alt={`${brand.name} logo`}
-        className="max-w-24 max-h-12 object-contain group-hover:opacity-100 transition-opacity duration-300"
+        className="max-h-7 sm:max-h-8 max-w-17 sm:max-w-20 object-contain group-hover:opacity-100 transition-opacity duration-300"
       />
     </div>
   );
 
   return (
-    <section ref={containerRef} className="py-24 mt-12 bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors duration-300">
+    <section
+      ref={containerRef}
+      id="brands"
+      className="py-24 mt-12 bg-white dark:bg-black text-black dark:text-white overflow-hidden transition-colors duration-300"
+    >
       <div className="max-w-7xl mx-auto px-8">
         
         {/* Section Header */}
@@ -121,7 +135,7 @@ export default function Brands() {
         </div>
 
         {/* Infinite Marquee Rows */}
-        <div className="space-y-8">
+        <div className="space-y-5 sm:space-y-6">
           
           {/* Row 1: Left to Right */}
           <div className="relative overflow-hidden">
@@ -144,10 +158,6 @@ export default function Brands() {
         
 
         </div>
-
-        {/* Gradient Overlays for Seamless Effect */}
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none z-10"></div>
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black to-transparent pointer-events-none z-10"></div>
 
         {/* Bottom Stats */}
         {/* <div className="text-center mt-20">
