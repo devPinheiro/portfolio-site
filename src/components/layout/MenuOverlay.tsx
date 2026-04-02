@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 
 interface MenuOverlayProps {
@@ -11,6 +12,7 @@ const menuItems = [
   { label: 'Work', href: '#work' },
   { label: 'Brands', href: '#brands' },
   { label: 'Contact', href: '#contact' },
+  { label: 'Demos', href: '/demos' },
 ];
 
 const socialLinks = [
@@ -20,6 +22,8 @@ const socialLinks = [
 ];
 
 export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const overlay = useRef<HTMLDivElement>(null);
   const menuContainer = useRef<HTMLDivElement>(null);
   const menuItemsRef = useRef<(HTMLLIElement | null)[]>([]);
@@ -103,10 +107,18 @@ export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
 
   const handleItemClick = (href: string) => {
     if (href.startsWith('#')) {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+      if (location.pathname !== '/') {
+        navigate('/' + href);
+        window.setTimeout(() => {
+          const element = document.querySelector(href);
+          if (element) element.scrollIntoView({ behavior: 'smooth' });
+        }, 50);
+      } else {
+        const element = document.querySelector(href);
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
       }
+    } else if (href.startsWith('/')) {
+      navigate(href);
     } else {
       window.open(href, '_blank');
     }
