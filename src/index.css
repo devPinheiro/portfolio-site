@@ -129,5 +129,43 @@ html:not(.dark) {
   }
 }
 
+/* Seamless infinite marquee: duplicate strip + translate -50% = no loop jump */
+@keyframes marquee-seamless-ltr {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes marquee-seamless-rtl {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-seamless-ltr var(--marquee-duration, 45s) linear infinite;
+  will-change: transform;
+}
+
+.marquee-track--rtl {
+  animation-name: marquee-seamless-rtl;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
 
 

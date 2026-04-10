@@ -6,7 +6,6 @@ import {
   type Transition,
 } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
 
 type Testimonial = {
   name: string;

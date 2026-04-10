@@ -8,6 +8,24 @@ const demos = [
       'A minimalist WhatsApp-status-style testimonials timeline with precise motion, navigation, and a single progress bar.',
     href: '/demos/testimonials-stories',
   },
+  {
+    title: 'Infinite marquee (3 rows)',
+    description:
+      'Three seamless horizontal marquees—duplicated track + translate -50% for a fluid loop with no restart jerk.',
+    href: '/demos/infinite-marquee',
+  },
+  {
+    title: 'Nigeria ASCII flag',
+    description:
+      'Full flag as a canvas grid (green–white–green): hover for ripple, rotation, and deterministic glyph swaps across every stripe.',
+    href: '/demos/nigeria-ascii-map',
+  },
+  {
+    title: 'Matrix rain (full viewport)',
+    description:
+      'Canvas digital rain: trail fade, per-column drops, glyph flicker, DPR-aware — pauses when the tab is hidden.',
+    href: '/demos/matrix-rain',
+  },
 ]
 
 export function DemosIndexPage() {
