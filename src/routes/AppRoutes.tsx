@@ -5,6 +5,7 @@ import { TestimonialsStoriesDemoPage } from '../pages/demos/TestimonialsStoriesD
 import { MarqueeDemoPage } from '../pages/demos/MarqueeDemoPage'
 import { NigeriaAsciiMapDemoPage } from '../pages/demos/NigeriaAsciiMapDemoPage'
 import { MatrixRainDemoPage } from '../pages/demos/MatrixRainDemoPage'
+import { ImageAsciiDemoPage } from '../pages/demos/ImageAsciiDemoPage'
 
 export function AppRoutes() {
   return (
@@ -18,6 +19,7 @@ export function AppRoutes() {
       <Route path="/demos/infinite-marquee" element={<MarqueeDemoPage />} />
       <Route path="/demos/nigeria-ascii-map" element={<NigeriaAsciiMapDemoPage />} />
       <Route path="/demos/matrix-rain" element={<MatrixRainDemoPage />} />
+      <Route path="/demos/image-ascii" element={<ImageAsciiDemoPage />} />
     </Routes>
   )
 }
