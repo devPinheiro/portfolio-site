@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/demos/ascii-image",
+      "destination": "/demos/image-ascii",
+      "permanent": true
+    }
+  ],
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

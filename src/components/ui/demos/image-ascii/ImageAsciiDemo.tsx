@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+
 import { Link } from 'react-router-dom'
 import { useReducedMotion } from 'framer-motion'
 
@@ -213,8 +214,7 @@ export function ImageAsciiDemo() {
     <section aria-label="Image to ASCII demo">
       <p className="mb-8 max-w-2xl text-sm text-black/65 dark:text-white/65">
         Upload an image, downscale it on a canvas, compute luminance, and map
-        brightness to a character ramp. References: Marmelab’s canvas-based
-        approach and common ASCII ramps.{' '}
+        brightness to a character ramp. {' '}
         <Link to="/demos" className="underline underline-offset-4 hover:opacity-80">
           Back to demos
         </Link>
