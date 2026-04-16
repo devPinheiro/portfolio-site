@@ -9,6 +9,12 @@ const demos = [
     href: '/demos/testimonials-stories',
   },
   {
+    title: 'Image → ASCII',
+    description:
+      'Upload a real image and generate ASCII art: canvas downscale → luminance → character ramp.',
+    href: '/demos/image-ascii',
+  },
+  {
     title: 'Infinite marquee (3 rows)',
     description:
       'Three seamless horizontal marquees—duplicated track + translate -50% for a fluid loop with no restart jerk.',
