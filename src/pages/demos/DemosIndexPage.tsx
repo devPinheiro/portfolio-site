@@ -15,6 +15,12 @@ const demos = [
     href: '/demos/image-ascii',
   },
   {
+    title: 'Kinetic WebGL image gallery',
+    description:
+      'OGL + GLSL: kinetic carousel and 3D cylinder reel, orbit and wave layouts, random Picsum textures, drag/wheel inertia with velocity-based RGB distortion.',
+    href: '/demos/webgl-sneeze-masonry',
+  },
+  {
     title: 'Infinite marquee (3 rows)',
     description:
       'Three seamless horizontal marquees—duplicated track + translate -50% for a fluid loop with no restart jerk.',

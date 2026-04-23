@@ -6,6 +6,7 @@ import { MarqueeDemoPage } from '../pages/demos/MarqueeDemoPage'
 import { NigeriaAsciiMapDemoPage } from '../pages/demos/NigeriaAsciiMapDemoPage'
 import { MatrixRainDemoPage } from '../pages/demos/MatrixRainDemoPage'
 import { ImageAsciiDemoPage } from '../pages/demos/ImageAsciiDemoPage'
+import { WebglSneezeMasonryDemoPage } from '../pages/demos/WebglSneezeMasonryDemoPage'
 
 export function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ export function AppRoutes() {
       <Route path="/demos/nigeria-ascii-map" element={<NigeriaAsciiMapDemoPage />} />
       <Route path="/demos/matrix-rain" element={<MatrixRainDemoPage />} />
       <Route path="/demos/image-ascii" element={<ImageAsciiDemoPage />} />
+      <Route path="/demos/webgl-sneeze-masonry" element={<WebglSneezeMasonryDemoPage />} />
     </Routes>
   )
 }
