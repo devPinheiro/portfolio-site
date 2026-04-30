@@ -21,6 +21,12 @@ const demos = [
     href: '/demos/webgl-sneeze-masonry',
   },
   {
+    title: 'Instant Polaroid camera',
+    description:
+      'Capture a real webcam shot, apply instant-film styling, and watch the printed photo animate out of the camera slot in real time.',
+    href: '/demos/instant-polaroid-camera',
+  },
+  {
     title: 'Infinite marquee (3 rows)',
     description:
       'Three seamless horizontal marquees—duplicated track + translate -50% for a fluid loop with no restart jerk.',
