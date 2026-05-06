@@ -8,6 +8,7 @@ import { MatrixRainDemoPage } from '../pages/demos/MatrixRainDemoPage'
 import { ImageAsciiDemoPage } from '../pages/demos/ImageAsciiDemoPage'
 import { WebglSneezeMasonryDemoPage } from '../pages/demos/WebglSneezeMasonryDemoPage'
 import { InstantPolaroidDemoPage } from '../pages/demos/InstantPolaroidDemoPage'
+import { WebAiImageBackgroundRemoverDemoPage } from '../pages/demos/WebAiImageBackgroundRemoverDemoPage'
 
 export function AppRoutes() {
   return (
@@ -24,6 +25,10 @@ export function AppRoutes() {
       <Route path="/demos/image-ascii" element={<ImageAsciiDemoPage />} />
       <Route path="/demos/webgl-sneeze-masonry" element={<WebglSneezeMasonryDemoPage />} />
       <Route path="/demos/instant-polaroid-camera" element={<InstantPolaroidDemoPage />} />
+      <Route
+        path="/demos/webai-image-background-remover"
+        element={<WebAiImageBackgroundRemoverDemoPage />}
+      />
     </Routes>
   )
 }
