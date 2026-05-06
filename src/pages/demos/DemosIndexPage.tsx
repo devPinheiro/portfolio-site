@@ -27,6 +27,12 @@ const demos = [
     href: '/demos/instant-polaroid-camera',
   },
   {
+    title: 'WebAI image background remover',
+    description:
+      'Browser-only RMBG-1.4 + WebGPU background removal with local processing, model init progress, and transparent PNG export.',
+    href: '/demos/webai-image-background-remover',
+  },
+  {
     title: 'Infinite marquee (3 rows)',
     description:
       'Three seamless horizontal marquees—duplicated track + translate -50% for a fluid loop with no restart jerk.',
