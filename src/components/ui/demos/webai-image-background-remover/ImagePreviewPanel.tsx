@@ -1,8 +1,10 @@
-import { ImageIcon } from 'lucide-react'
+import { ImageIcon, Loader2 } from 'lucide-react'
 import type { ImageAsset } from './types'
 
 interface ImagePreviewPanelProps {
   image: ImageAsset | null
+  isProcessing?: boolean
+  processingLabel?: string
 }
 
 const checkerboardBackground = {
@@ -12,34 +14,64 @@ const checkerboardBackground = {
   backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0',
 }
 
-export function ImagePreviewPanel({ image }: ImagePreviewPanelProps) {
+const previewPaneClass =
+  'relative min-h-[min(65vh,520px)] rounded-lg border overflow-hidden flex items-center justify-center'
+
+export function ImagePreviewPanel({
+  image,
+  isProcessing = false,
+  processingLabel = 'Removing background…',
+}: ImagePreviewPanelProps) {
+  const showResultPreview = image && (image.resultUrl || (isProcessing && !image.resultUrl))
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div>
-        <p className="mb-2 text-xs uppercase tracking-wide text-black/60 dark:text-white/60">Original</p>
-        <div className="aspect-video rounded-lg border border-black/10 bg-black/3 dark:border-white/15 dark:bg-white/3 overflow-hidden flex items-center justify-center">
+        <p className="mb-2 text-sm uppercase tracking-wide text-black/60 dark:text-white/60">Original</p>
+        <div
+          className={`${previewPaneClass} border-black/10 bg-black/3 dark:border-white/15 dark:bg-white/3`}
+        >
           {image ? (
             <img src={image.previewUrl} alt={image.file.name} className="max-h-full max-w-full object-contain" />
           ) : (
-            <EmptyState label="Select an image to preview" />
+            <EmptyState label="Upload an image to preview" />
           )}
+          {isProcessing ? <ProcessingOverlay label={processingLabel} /> : null}
         </div>
       </div>
       <div>
-        <p className="mb-2 text-xs uppercase tracking-wide text-black/60 dark:text-white/60">
+        <p className="mb-2 text-sm uppercase tracking-wide text-black/60 dark:text-white/60">
           Result (transparent PNG)
         </p>
         <div
-          className="aspect-video rounded-lg border border-black/10 dark:border-white/15 overflow-hidden flex items-center justify-center"
+          className={`${previewPaneClass} border-black/10 dark:border-white/15`}
           style={checkerboardBackground}
         >
-          {image?.resultUrl ? (
-            <img src={image.resultUrl} alt="Background removed result" className="max-h-full max-w-full object-contain" />
+          {showResultPreview ? (
+            <img
+              src={image.resultUrl ?? image.previewUrl}
+              alt={image.resultUrl ? 'Background removed result' : image.file.name}
+              className={`max-h-full max-w-full object-contain ${isProcessing && !image.resultUrl ? 'opacity-60' : ''}`}
+            />
           ) : (
-            <EmptyState label="Process an image to view result" />
+            <EmptyState label="Upload an image to remove its background" />
           )}
+          {isProcessing ? <ProcessingOverlay label={processingLabel} /> : null}
         </div>
       </div>
+    </div>
+  )
+}
+
+function ProcessingOverlay({ label }: { label: string }) {
+  return (
+    <div
+      className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black/40 dark:bg-black/50"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <Loader2 className="h-8 w-8 animate-spin text-white" />
+      <p className="text-sm font-medium text-white">{label}</p>
     </div>
   )
 }
