@@ -19,8 +19,38 @@ function configureOnnxWasmEnv(): void {
   wasm.numThreads = 1
 }
 
+/**
+ * Mobile WebGPU is still flaky as of 2026: Android Chrome ships it behind flags on many
+ * devices, iOS Safari only enables it in TP/beta, and even when `requestAdapter()` resolves,
+ * RMBG-1.4 typically hangs during shader compilation or exhausts memory mid-inference.
+ * Detect mobile up front and prefer the WASM path on those devices.
+ */
+function isLikelyMobileBrowser(): boolean {
+  if (typeof navigator === 'undefined') return false
+
+  const uaData = (
+    navigator as Navigator & { userAgentData?: { mobile?: boolean } }
+  ).userAgentData
+  if (uaData && typeof uaData.mobile === 'boolean') return uaData.mobile
+
+  const ua = navigator.userAgent || ''
+  if (/Android|iPhone|iPod|Windows Phone|IEMobile|Opera Mini|Mobile/i.test(ua)) return true
+
+  // iPadOS 13+ identifies as desktop Macintosh; touch points reveal the tablet.
+  if (
+    /Macintosh/i.test(ua) &&
+    typeof navigator.maxTouchPoints === 'number' &&
+    navigator.maxTouchPoints > 1
+  ) {
+    return true
+  }
+
+  return false
+}
+
 async function hasUsableWebGpuAdapter(): Promise<boolean> {
   if (typeof navigator === 'undefined' || !navigator.gpu) return false
+  if (isLikelyMobileBrowser()) return false
   try {
     const adapter = await navigator.gpu.requestAdapter()
     return adapter != null
