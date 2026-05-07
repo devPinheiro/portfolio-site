@@ -194,8 +194,8 @@ export function WebAiImageBackgroundRemoverDemo() {
   return (
     <section aria-label="WebAI image background remover demo">
       <p className="mb-6 max-w-3xl text-sm text-black/65 dark:text-white/65">
-        Remove image backgrounds fully in-browser with RMBG-1.4 + WebGPU. Images never leave
-        your device.{' '}
+        Remove image backgrounds fully in-browser with RMBG-1.4 — WebGPU on desktop, with a
+        WebAssembly fallback on mobile. Images never leave your device.{' '}
         <Link to="/demos" className="underline underline-offset-4 hover:opacity-80">
           Back to demos
         </Link>
