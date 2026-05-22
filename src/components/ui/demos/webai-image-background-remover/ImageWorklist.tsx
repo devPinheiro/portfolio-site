@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react'
 import type { ImageAsset } from './types'
 
 interface ImageWorklistProps {
@@ -29,7 +30,21 @@ export function ImageWorklist({
           }`}
         >
           <div className="flex items-center gap-3">
-            <img src={image.previewUrl} alt={image.file.name} className="h-10 w-10 rounded object-cover" />
+            <div className="relative h-10 w-10 shrink-0">
+              <img
+                src={image.previewUrl}
+                alt={image.file.name}
+                className="h-10 w-10 rounded object-cover"
+              />
+              {image.status === 'processing' ? (
+                <div
+                  className="absolute inset-0 flex items-center justify-center rounded bg-black/50"
+                  aria-hidden
+                >
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                </div>
+              ) : null}
+            </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-medium">{image.file.name}</p>
               <p className="text-[11px] text-black/60 dark:text-white/60">

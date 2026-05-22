@@ -1,15 +1,21 @@
+import type { ImageAsset, RuntimeState } from './types'
 import { Loader2, Sparkles, Upload } from 'lucide-react'
+import { ensureSegmenter, getBackendInUse, removeBackgroundWithRmbg } from './rmbgService'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+
 import { ImagePreviewPanel } from './ImagePreviewPanel'
 import { ImageWorklist } from './ImageWorklist'
+import { Link } from 'react-router-dom'
 import { RuntimeStatusCard } from './RuntimeStatusCard'
-import { ensureSegmenter, getBackendInUse, removeBackgroundWithRmbg } from './rmbgService'
-import type { ImageAsset, RuntimeState } from './types'
 
 export function WebAiImageBackgroundRemoverDemo() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const imagesRef = useRef<ImageAsset[]>([])
+  const processQueueRef = useRef<string[]>([])
+  const runtimePhaseRef = useRef<RuntimeState['phase']>('idle')
+  const processingRef = useRef<string | null>(null)
+  const drainProcessQueueRef = useRef<() => void>(() => {})
+
   const [images, setImages] = useState<ImageAsset[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [processing, setProcessing] = useState<string | null>(null)
@@ -24,6 +30,14 @@ export function WebAiImageBackgroundRemoverDemo() {
     () => images.find((img) => img.id === selectedId) ?? null,
     [images, selectedId],
   )
+
+  useEffect(() => {
+    runtimePhaseRef.current = runtime.phase
+  }, [runtime.phase])
+
+  useEffect(() => {
+    processingRef.current = processing
+  }, [processing])
 
   useEffect(() => {
     let isMounted = true
@@ -61,6 +75,12 @@ export function WebAiImageBackgroundRemoverDemo() {
   }, [])
 
   useEffect(() => {
+    if (runtime.phase === 'ready') {
+      drainProcessQueueRef.current()
+    }
+  }, [runtime.phase])
+
+  useEffect(() => {
     imagesRef.current = images
   }, [images])
 
@@ -72,6 +92,72 @@ export function WebAiImageBackgroundRemoverDemo() {
       })
     }
   }, [])
+
+  const enqueueProcessing = useCallback((ids: string[]) => {
+    if (ids.length === 0) return
+    processQueueRef.current.push(...ids)
+    drainProcessQueueRef.current()
+  }, [])
+
+  const processImage = useCallback(async (image: ImageAsset) => {
+    setProcessing(image.id)
+    setImages((prev) =>
+      prev.map((item) =>
+        item.id === image.id ? { ...item, status: 'processing', error: undefined } : item,
+      ),
+    )
+
+    try {
+      const blob = await removeBackgroundWithRmbg(image.previewUrl)
+      const resultUrl = URL.createObjectURL(blob)
+
+      setImages((prev) =>
+        prev.map((item) => {
+          if (item.id !== image.id) return item
+          if (item.resultUrl) URL.revokeObjectURL(item.resultUrl)
+          return { ...item, resultUrl, status: 'done', error: undefined }
+        }),
+      )
+    } catch (error) {
+      setImages((prev) =>
+        prev.map((item) =>
+          item.id === image.id
+            ? {
+                ...item,
+                status: 'error',
+                error: error instanceof Error ? error.message : 'Background removal failed.',
+              }
+            : item,
+        ),
+      )
+    } finally {
+      setProcessing(null)
+      drainProcessQueueRef.current()
+    }
+  }, [])
+
+  const drainProcessQueue = useCallback(async () => {
+    if (processingRef.current !== null) return
+    if (runtimePhaseRef.current !== 'ready') return
+
+    while (processQueueRef.current.length > 0 && processingRef.current === null) {
+      const nextId = processQueueRef.current[0]
+      const image = imagesRef.current.find((item) => item.id === nextId)
+      if (!image || image.resultUrl || image.status === 'processing') {
+        processQueueRef.current.shift()
+        continue
+      }
+      processQueueRef.current.shift()
+      await processImage(image)
+      return
+    }
+  }, [processImage])
+
+  useEffect(() => {
+    drainProcessQueueRef.current = () => {
+      void drainProcessQueue()
+    }
+  }, [drainProcessQueue])
 
   const handleSelectFiles = useCallback(
     (files: FileList | null) => {
@@ -110,65 +196,25 @@ export function WebAiImageBackgroundRemoverDemo() {
             }),
         ),
       ).then((created) => {
-        setImages((prev) => {
-          const merged = [...prev, ...created]
-          if (!selectedId && merged[0]) setSelectedId(merged[0].id)
-          return merged
-        })
+        const newIds = created.map((item) => item.id)
+        setImages((prev) => [...prev, ...created])
+        setSelectedId((prev) => prev ?? created[0]?.id ?? null)
+        enqueueProcessing(newIds)
       })
     },
-    [selectedId],
+    [enqueueProcessing],
   )
-
-  const processImage = useCallback(async (image: ImageAsset) => {
-    setProcessing(image.id)
-    setImages((prev) =>
-      prev.map((item) =>
-        item.id === image.id ? { ...item, status: 'processing', error: undefined } : item,
-      ),
-    )
-
-    try {
-      const blob = await removeBackgroundWithRmbg(image.previewUrl)
-      const resultUrl = URL.createObjectURL(blob)
-
-      setImages((prev) =>
-        prev.map((item) => {
-          if (item.id !== image.id) return item
-          if (item.resultUrl) URL.revokeObjectURL(item.resultUrl)
-          return { ...item, resultUrl, status: 'done', error: undefined }
-        }),
-      )
-    } catch (error) {
-      setImages((prev) =>
-        prev.map((item) =>
-          item.id === image.id
-            ? {
-                ...item,
-                status: 'error',
-                error: error instanceof Error ? error.message : 'Background removal failed.',
-              }
-            : item,
-        ),
-      )
-    } finally {
-      setProcessing(null)
-    }
-  }, [])
 
   const handleProcessCurrent = useCallback(async () => {
     if (!currentImage || processing || runtime.phase !== 'ready' || currentImage.resultUrl) return
-    await processImage(currentImage)
-  }, [currentImage, processImage, processing, runtime.phase])
+    enqueueProcessing([currentImage.id])
+  }, [currentImage, enqueueProcessing, processing, runtime.phase])
 
-  const handleProcessAll = useCallback(async () => {
+  const handleProcessAll = useCallback(() => {
     if (runtime.phase !== 'ready' || processing) return
-    const queue = images.filter((img) => !img.resultUrl)
-    for (const img of queue) {
-      // Sequential processing limits memory usage for big image queues.
-      await processImage(img)
-    }
-  }, [images, processImage, processing, runtime.phase])
+    const ids = images.filter((img) => !img.resultUrl).map((img) => img.id)
+    enqueueProcessing(ids)
+  }, [images, enqueueProcessing, processing, runtime.phase])
 
   const handleDownload = useCallback((img: ImageAsset) => {
     if (!img.resultUrl) return
@@ -179,6 +225,7 @@ export function WebAiImageBackgroundRemoverDemo() {
   }, [])
 
   const handleRemove = useCallback((imageId: string) => {
+    processQueueRef.current = processQueueRef.current.filter((id) => id !== imageId)
     setImages((prev) => {
       const target = prev.find((item) => item.id === imageId)
       if (target) {
@@ -195,14 +242,15 @@ export function WebAiImageBackgroundRemoverDemo() {
     <section aria-label="WebAI image background remover demo">
       <p className="mb-6 max-w-3xl text-sm text-black/65 dark:text-white/65">
         Remove image backgrounds fully in-browser with RMBG-1.4 — WebGPU on desktop, with a
-        WebAssembly fallback on mobile. Images never leave your device.{' '}
+        WebAssembly fallback on mobile. Upload images to start processing automatically; nothing
+        leaves your device.{' '}
         <Link to="/demos" className="underline underline-offset-4 hover:opacity-80">
           Back to demos
         </Link>
       </p>
 
       <div className="rounded-2xl border border-black/10 bg-white p-6 dark:bg-black dark:border-white/15">
-        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+        <div className="grid gap-6 lg:grid-cols-[minmax(240px,280px)_1fr]">
           <aside className="space-y-4">
             <button
               type="button"
@@ -225,7 +273,10 @@ export function WebAiImageBackgroundRemoverDemo() {
               accept="image/*"
               multiple
               className="hidden"
-              onChange={(event) => handleSelectFiles(event.target.files)}
+              onChange={(event) => {
+                handleSelectFiles(event.target.files)
+                event.target.value = ''
+              }}
             />
 
             <RuntimeStatusCard runtime={runtime} />
@@ -238,15 +289,15 @@ export function WebAiImageBackgroundRemoverDemo() {
                 className="inline-flex items-center gap-2 rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-2 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {processing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                Process selected
+                Retry selected
               </button>
               <button
                 type="button"
-                onClick={() => void handleProcessAll()}
+                onClick={() => handleProcessAll()}
                 disabled={!images.length || !!processing || runtime.phase !== 'ready'}
                 className="inline-flex items-center gap-2 rounded-lg border border-black/15 dark:border-white/20 px-3 py-2 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Process all
+                Retry all pending
               </button>
             </div>
 
@@ -259,7 +310,10 @@ export function WebAiImageBackgroundRemoverDemo() {
             />
           </aside>
 
-          <ImagePreviewPanel image={currentImage} />
+          <ImagePreviewPanel
+            image={currentImage}
+            isProcessing={currentImage?.status === 'processing'}
+          />
         </div>
       </div>
     </section>
