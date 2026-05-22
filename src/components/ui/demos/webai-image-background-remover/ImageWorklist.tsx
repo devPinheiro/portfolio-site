@@ -6,7 +6,6 @@ interface ImageWorklistProps {
   selectedId: string | null
   onSelect: (id: string) => void
   onRemove: (id: string) => void
-  onDownload: (image: ImageAsset) => void
 }
 
 export function ImageWorklist({
@@ -14,7 +13,6 @@ export function ImageWorklist({
   selectedId,
   onSelect,
   onRemove,
-  onDownload,
 }: ImageWorklistProps) {
   return (
     <div className="max-h-[360px] space-y-2 overflow-auto pr-1">
@@ -56,18 +54,6 @@ export function ImageWorklist({
             </span>
           </div>
           <div className="mt-2 flex items-center justify-end gap-2">
-            {image.resultUrl ? (
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onDownload(image)
-                }}
-                className="rounded-md border border-black/15 px-2 py-1 text-[11px] dark:border-white/20"
-              >
-                Download
-              </button>
-            ) : null}
             <button
               type="button"
               onClick={(event) => {

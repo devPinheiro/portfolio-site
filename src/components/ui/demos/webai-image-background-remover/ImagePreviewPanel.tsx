@@ -1,10 +1,11 @@
-import { ImageIcon, Loader2 } from 'lucide-react'
+import { Download, ImageIcon, Loader2 } from 'lucide-react'
 import type { ImageAsset } from './types'
 
 interface ImagePreviewPanelProps {
   image: ImageAsset | null
   isProcessing?: boolean
   processingLabel?: string
+  onDownload?: (image: ImageAsset) => void
 }
 
 const checkerboardBackground = {
@@ -21,6 +22,7 @@ export function ImagePreviewPanel({
   image,
   isProcessing = false,
   processingLabel = 'Removing background…',
+  onDownload,
 }: ImagePreviewPanelProps) {
   const showResultPreview = image && (image.resultUrl || (isProcessing && !image.resultUrl))
 
@@ -40,9 +42,21 @@ export function ImagePreviewPanel({
         </div>
       </div>
       <div>
-        <p className="mb-2 text-sm uppercase tracking-wide text-black/60 dark:text-white/60">
-          Result (transparent PNG)
-        </p>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <p className="text-sm uppercase tracking-wide text-black/60 dark:text-white/60">
+            Result (transparent PNG)
+          </p>
+          {image?.resultUrl && onDownload ? (
+            <button
+              type="button"
+              onClick={() => onDownload(image)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 text-xs font-medium"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Download
+            </button>
+          ) : null}
+        </div>
         <div
           className={`${previewPaneClass} border-black/10 dark:border-white/15`}
           style={checkerboardBackground}

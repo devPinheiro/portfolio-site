@@ -289,7 +289,7 @@ export function WebAiImageBackgroundRemoverDemo() {
                 className="inline-flex items-center gap-2 rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-2 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {processing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                Retry selected
+                Process selected
               </button>
               <button
                 type="button"
@@ -297,7 +297,7 @@ export function WebAiImageBackgroundRemoverDemo() {
                 disabled={!images.length || !!processing || runtime.phase !== 'ready'}
                 className="inline-flex items-center gap-2 rounded-lg border border-black/15 dark:border-white/20 px-3 py-2 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Retry all pending
+                Process all
               </button>
             </div>
 
@@ -306,13 +306,13 @@ export function WebAiImageBackgroundRemoverDemo() {
               selectedId={selectedId}
               onSelect={setSelectedId}
               onRemove={handleRemove}
-              onDownload={handleDownload}
             />
           </aside>
 
           <ImagePreviewPanel
             image={currentImage}
             isProcessing={currentImage?.status === 'processing'}
+            onDownload={handleDownload}
           />
         </div>
       </div>
