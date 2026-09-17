@@ -17,7 +17,7 @@ function absoluteUrl(base: string, path: string): string {
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
   title = 'Samuel Pinheiro - Full Stack Developer & AI Portfolio',
-  description = 'Interactive AI-powered portfolio showcasing full-stack development projects, React expertise, and innovative solutions. Chat with my AI assistant to explore my work.',
+  description = 'Samuel Pinheiro - Senior Software Engineer',
   keywords = [
     'full stack developer',
     'react developer',
